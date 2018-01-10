@@ -22,6 +22,14 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.example.android.sunshine.data.WeatherContract;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.Driver;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobValidator;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +47,32 @@ public class SunshineSyncUtils {
 //  COMPLETED (11) Add a sync tag to identify our sync job
     private static boolean sInitialized;
 
-//  TODO (12) Create a method to schedule our periodic weather sync
+//  COMPLETED (12) Create a method to schedule our periodic weather sync
+    // Method which create Job dispatcher
+    private static void createDispatcher(Context context){
+
+        Driver googleDriver = new GooglePlayDriver(context);
+        FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(googleDriver);
+
+        Job myScheduledJob = firebaseJobDispatcher.newJobBuilder()
+                .setService(SunshineFirebaseJobService.class)
+                .setTag(SUNSHINE_SYNC_TAG)
+                .setRecurring(true)// == Repeat forever the job , We want Sunshine's weather data to stay up to date, so we tell this Job to recur.
+                .setLifetime(Lifetime.FOREVER)// == work after Reboot
+                .setTrigger(Trigger.executionWindow(REMINDER_INTERVAL_SECONDS_3H,REMINDER_INTERVAL_SECONDS_4H))
+                .setReplaceCurrent(true)//overwrite an existing job with the same tag
+                //Network constraints on which this Job should run. We choose to run on any
+                //network, but you can also choose to run only on un-metered networks or when the
+                //device is charging. It might be a good idea to include a preference for this,
+                //as some users may not want to download any data on their mobile plan. ($$$)
+
+                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .build();
+
+        firebaseJobDispatcher.schedule(myScheduledJob);
+
+    }
+
 
     /**
      * Creates periodic sync tasks and checks to see if an immediate sync is required. If an
@@ -58,7 +91,8 @@ public class SunshineSyncUtils {
 
         sInitialized = true;
 
-//      TODO (13) Call the method you created to schedule a periodic weather sync
+//      COMPLETED (13) Call the method you created to schedule a periodic weather sync
+        createDispatcher(context);
 
         /*
          * We need to check to see if our ContentProvider has data to display in our forecast

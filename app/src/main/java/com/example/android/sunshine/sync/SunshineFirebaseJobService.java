@@ -26,7 +26,7 @@ import com.firebase.jobdispatcher.JobService;
 public class SunshineFirebaseJobService extends JobService{
 
     //  completed (4) Declare an ASyncTask field called mFetchWeatherTask
-    AsyncTask mFetchWeatherTask;
+    AsyncTask<Void, Void, Void> mFetchWeatherTask;
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -35,10 +35,10 @@ public class SunshineFirebaseJobService extends JobService{
     //  COMPLETED (6) Once the weather data is sync'd, call jobFinished with the appropriate arguments
     public boolean onStartJob(final JobParameters job) {
 
-        mFetchWeatherTask = new AsyncTask(){
+        mFetchWeatherTask = new AsyncTask<Void, Void, Void>(){
 
             @Override
-            protected Object doInBackground(Object[] objects) {
+            protected Void doInBackground(Void... voids) {
                 SunshineSyncTask.syncWeather(SunshineFirebaseJobService.this);
                 return null;
             }
@@ -46,7 +46,7 @@ public class SunshineFirebaseJobService extends JobService{
             // and false to jobFinished. This will inform the JobManager that your job is done
             // and that you do not want to reschedule the job.
             @Override
-            protected void onPostExecute(Object o) {
+            protected void onPostExecute(Void aVoid) {
                 jobFinished(job,false);
             }
         };
