@@ -23,13 +23,21 @@ import android.support.annotation.NonNull;
 
 import com.example.android.sunshine.data.WeatherContract;
 
+import java.util.concurrent.TimeUnit;
+
 public class SunshineSyncUtils {
 
-//  TODO (10) Add constant values to sync Sunshine every 3 - 4 hours
+    //  COMPLETED (10) Add constant values to sync Sunshine every 3 - 4 hours
+    private static final int REMINDER_INTERVAL_MINUTES_3H = 180;
+    private static final int REMINDER_INTERVAL_MINUTES_4H = 240;
 
+    private static final int REMINDER_INTERVAL_SECONDS_3H = (int) (TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTES_3H));
+    private static final int REMINDER_INTERVAL_SECONDS_4H = (int) (TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTES_4H));
+
+    private static final String SUNSHINE_SYNC_TAG = "weather_reminder_tag";
+
+//  COMPLETED (11) Add a sync tag to identify our sync job
     private static boolean sInitialized;
-
-//  TODO (11) Add a sync tag to identify our sync job
 
 //  TODO (12) Create a method to schedule our periodic weather sync
 
